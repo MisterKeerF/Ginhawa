@@ -1,0 +1,519 @@
+<?php
+session_start();
+?>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Book an Appointment</title>
+  <!-- Poppins font from Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+    body {
+      background-color: #f8f4d8;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .header {
+      background-color: #103b2d;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+    }
+    .header .logo {
+      display: flex;
+      align-items: center;
+    }
+    .header .logo img {
+      height: 70px;
+    }
+    .header .nav {
+      display: flex;
+      gap: 2rem;
+    }
+    .header .nav a {
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .header .nav a:hover,
+    .header .nav a.active {
+      text-decoration: underline;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 600px;
+      margin: 2rem auto;
+      background-color: #ffffff;
+      padding: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+    }
+    h2, h3 {
+      color: #103b2d;
+      margin-bottom: 1.5rem;
+    }
+    h3 {
+      margin-top: 1.5rem;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+    .form-group select,
+    .form-group input {
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 2px solid #d1d1d1;
+      background-color: #f8f4d8;
+      outline: none;
+    }
+    .form-group select:focus,
+    .form-group input:focus {
+      border-color: #103b2d;
+    }
+    button {
+      padding: 12px 24px;
+      background-color: #103b2d;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover:enabled {
+      background-color: #0b2a1f;
+    }
+    button:disabled {
+      background-color: #999;
+      cursor: not-allowed;
+    }
+    .appointment-item {
+      background: #f1f2f3;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    .logout-container {
+      text-align: center;
+      margin-top: 1rem;
+    }
+    #logoutModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    #logoutModalContent {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      color: #103b2d;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    }
+    #logoutButtons {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    /* Confirmation Modal for Booking */
+    #confirmBookingModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1100;
+    }
+    #confirmBookingModal > div {
+      background: white;
+      padding: 1.5rem 2rem;
+      border-radius: 12px;
+      max-width: 320px;
+      text-align: center;
+      color: #103b2d;
+    }
+    #confirmBookingModal p {
+      font-size: 18px;
+      margin-bottom: 1.5rem;
+    }
+    #confirmBookingModal button {
+      margin-right: 10px;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    #confirmYesBtn {
+      background: #103b2d;
+      color: white;
+    }
+    #confirmNoBtn {
+      background: #ccc;
+      color: #333;
+      margin-right: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <img src="cream1.png" alt="GINHAWA Logo" />
+    </div>
+    <div class="nav">
+      <a id="homeLink" class="active">Home</a>
+      <a id="appointmentLink">Appointment</a>
+      <a id="profileLink">Profile</a>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="container" id="homeContainer">
+    <h2 id="greeting">Mabuhay, Prince Lord!</h2>
+    <h3>Appointment</h3>
+    <div id="appointmentHistoryList"></div>
+  </div>
+
+  <!-- APPOINTMENT -->
+  <div class="container" id="appointmentContainer" style="display:none;">
+    <h2>Book an Appointment</h2>
+    <div class="form-group">
+      <label for="doctorSelect">Doctor</label>
+      <select id="doctorSelect">
+        <option value="">Select a Doctor</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="dateInput">Date</label>
+      <input type="text" id="dateInput" placeholder="Select a date" readonly disabled />
+    </div>
+    <div class="form-group">
+      <label for="timeSelect">Time</label>
+      <select id="timeSelect" disabled>
+        <option value="">Select a time</option>
+      </select>
+    </div>
+    <button id="bookBtn" disabled>Book Appointment</button>
+
+    <h3>Current Session Appointments:</h3>
+    <div id="appointmentList"></div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="container" id="profileContainer" style="display:none;">
+    <div class="form-group">
+      <label for="profileName">Name</label>
+      <input type="text" id="profileName" value="Prince Lord" />
+    </div>
+    <div class="form-group">
+      <label for="profileAge">Age</label>
+      <input type="number" id="profileAge" value="25" />
+    </div>
+    <div class="form-group">
+      <label for="profileContact">Contact Number</label>
+      <input type="text" id="profileContact" value="09123456789" />
+    </div>
+    <div class="form-group">
+      <label for="profileAddress">Address</label>
+      <input type="text" id="profileAddress" value="123 Mabuhay St., Metro Manila" />
+    </div>
+    <div class="logout-container">
+      <button id="logoutBtn">Log Out</button>
+    </div>
+  </div>
+
+  <!-- LOGOUT MODAL -->
+  <div id="logoutModal">
+    <div id="logoutModalContent">
+      <p>Are you sure you want to log out?</p>
+      <div id="logoutButtons">
+        <button id="logoutYes">Yes</button>
+        <button id="logoutNo">No</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRMATION MODAL FOR BOOKING -->
+  <div id="confirmBookingModal">
+    <div>
+      <p>Are you sure you want to book this appointment?</p>
+      <button id="confirmYesBtn">Yes</button>
+      <button id="confirmNoBtn">No</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    const homeLink = document.getElementById('homeLink');
+    const appointmentLink = document.getElementById('appointmentLink');
+    const profileLink = document.getElementById('profileLink');
+
+    const homeContainer = document.getElementById('homeContainer');
+    const appointmentContainer = document.getElementById('appointmentContainer');
+    const profileContainer = document.getElementById('profileContainer');
+
+    const doctorSelect = document.getElementById('doctorSelect');
+    const dateInput = document.getElementById('dateInput');
+    const timeSelect = document.getElementById('timeSelect');
+    const bookBtn = document.getElementById('bookBtn');
+
+    const appointmentList = document.getElementById('appointmentList');
+    const appointmentHistoryList = document.getElementById('appointmentHistoryList');
+
+    const logoutBtn = document.getElementById('logoutBtn');
+    const logoutModal = document.getElementById('logoutModal');
+    const logoutYes = document.getElementById('logoutYes');
+    const logoutNo = document.getElementById('logoutNo');
+
+    const confirmBookingModal = document.getElementById('confirmBookingModal');
+    const confirmYesBtn = document.getElementById('confirmYesBtn');
+    const confirmNoBtn = document.getElementById('confirmNoBtn');
+
+    // Utility: set active nav and show container
+    function setActiveNav(activeLink) {
+      [homeLink, appointmentLink, profileLink].forEach(link => {
+        link.classList.remove('active');
+      });
+      activeLink.classList.add('active');
+    }
+    function showContainer(container) {
+      [homeContainer, appointmentContainer, profileContainer].forEach(c => {
+        c.style.display = 'none';
+      });
+      container.style.display = 'block';
+    }
+
+    // Initialize Flatpickr for date input with constraints
+    const fp = flatpickr(dateInput, {
+      minDate: "today",
+      maxDate: new Date().fp_incr(7), // 7 days from now
+      dateFormat: "Y-m-d",
+      onChange: function(selectedDates) {
+        if (selectedDates.length > 0) {
+          timeSelect.disabled = false;
+          populateTimes();
+          validateForm();
+        }
+      }
+    });
+
+    function resetDateTimeInputs() {
+      dateInput.value = '';
+      timeSelect.innerHTML = '<option value="">Select a time</option>';
+      timeSelect.disabled = true;
+      bookBtn.disabled = true;
+    }
+
+    function populateTimes() {
+      const times = [
+        "08:00 AM", "09:00 AM", "10:00 AM",
+        "01:00 PM", "02:00 PM", "03:00 PM"
+      ];
+      timeSelect.innerHTML = '<option value="">Select a time</option>';
+      times.forEach(t => {
+        const option = document.createElement('option');
+        option.value = t;
+        option.textContent = t;
+        timeSelect.appendChild(option);
+      });
+    }
+
+    function validateForm() {
+      if (doctorSelect.value && dateInput.value && timeSelect.value) {
+        bookBtn.disabled = false;
+      } else {
+        bookBtn.disabled = true;
+      }
+    }
+
+    doctorSelect.addEventListener('change', () => {
+      resetDateTimeInputs();
+      if (doctorSelect.value) {
+        dateInput.disabled = false;
+      } else {
+        dateInput.disabled = true;
+      }
+      validateForm();
+    });
+
+    timeSelect.addEventListener('change', validateForm);
+
+    // Appointment storage per session
+    let appointments = [];
+
+    function renderAppointments() {
+      appointmentList.innerHTML = '';
+      if (appointments.length === 0) {
+        appointmentList.textContent = "No appointments in this session.";
+        return;
+      }
+      appointments.forEach((appt, idx) => {
+        const div = document.createElement('div');
+        div.classList.add('appointment-item');
+        div.textContent = `Doctor: ${appt.doctor}, Date: ${appt.date}, Time: ${appt.time}, Status: ${appt.status}`;
+        appointmentList.appendChild(div);
+      });
+    }
+
+    // For home: show all appointments with status (done or ongoing)
+    // For demo, we consider status property for appointments, with 'ongoing' or 'done'
+
+    // Simulate some previous appointments (could be fetched from backend or localStorage)
+    let appointmentHistory = [
+      {doctor: 'Dra. Ariane Jade Bote', date: '2025-05-18', time: '08:00 AM', status: 'done'},
+      {doctor: 'Justine', date: '2025-05-20', time: '02:00 PM', status: 'ongoing'}
+    ];
+
+    //adding fetch Doctors
+    document.addEventListener('DOMContentLoaded', () => {
+  const doctorSelect = document.getElementById('doctorSelect');
+
+  fetch('get_doctors_FINALE.php')
+    .then(response => response.json())
+    .then(doctors => {
+      doctors.forEach(name => {
+        const option = document.createElement('option');
+        option.value = name; // use the fullName as the value
+        option.textContent = name;
+        doctorSelect.appendChild(option);
+      });
+    })
+    .catch(err => {
+      console.error('Error loading doctors:', err);
+    });
+    });
+
+
+    function renderAppointmentHistory() {
+      appointmentHistoryList.innerHTML = '';
+      if (appointmentHistory.length === 0) {
+        appointmentHistoryList.textContent = "No appointment history.";
+        return;
+      }
+      appointmentHistory.forEach(appt => {
+        const div = document.createElement('div');
+        div.classList.add('appointment-item');
+        div.textContent = `Doctor: ${appt.doctor}, Date: ${appt.date}, Time: ${appt.time}, Status: ${appt.status}`;
+        appointmentHistoryList.appendChild(div);
+      });
+    }
+
+    // Add new appointment to both session and history with status 'ongoing'
+    function addAppointment(doctor, date, time) {
+      const newAppt = {doctor, date, time, status: 'ongoing'};
+      appointments.push(newAppt);
+      appointmentHistory.push(newAppt);
+      renderAppointments();
+      renderAppointmentHistory();
+    }
+
+    // Navigation event listeners
+    homeLink.addEventListener('click', () => {
+      setActiveNav(homeLink);
+      showContainer(homeContainer);
+      renderAppointmentHistory();
+    });
+
+    appointmentLink.addEventListener('click', () => {
+      setActiveNav(appointmentLink);
+      showContainer(appointmentContainer);
+      renderAppointments();
+    });
+
+    profileLink.addEventListener('click', () => {
+      setActiveNav(profileLink);
+      showContainer(profileContainer);
+    });
+
+    // Initial render on load
+    renderAppointmentHistory();
+
+    // Booking confirmation modal logic
+    bookBtn.addEventListener('click', () => {
+      confirmBookingModal.style.display = 'flex';
+    });
+
+    confirmYesBtn.addEventListener('click', () => {
+      const doctor = doctorSelect.value;
+      const date = dateInput.value;
+      const time = timeSelect.value;
+
+      fetch('book_appointment_FINALE.php', {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ doctor, date, time})
+      })
+       .then(response => response.text())
+       .then(raw => {
+        try {
+          const data = JSON.parse(raw);
+          if (data.success) {
+            addAppointment(doctor, date, time);
+            alert('Appointment Booked Successfully!');
+          } else {
+            alert('Booking Failed: ' + data.message);
+          }
+        } catch (err) {
+          console.error('Failed to parse JSON:', err);
+          alert('Error occurred: Invalid JSON from server:\n' + raw);
+        }
+          confirmBookingModal.style.display = 'none';
+          doctorSelect.value = '';
+          resetDateTimeInputs();
+       })
+       .catch(err => {
+          alert('Error occured: ' + err);
+          confirmBookingModal.style.display = 'none';
+       })
+    });
+
+    confirmNoBtn.addEventListener('click', () => {
+      confirmBookingModal.style.display = 'none';
+    });
+
+    // Logout modal logic
+    logoutBtn.addEventListener('click', () => {
+      logoutModal.style.display = 'flex';
+    });
+    logoutNo.addEventListener('click', () => {
+      logoutModal.style.display = 'none';
+    });
+   logoutYes.addEventListener('click', () => {
+  logoutModal.style.display = 'none';
+  alert('You have been logged out.');
+  // Redirect to main page.html
+  window.location.href = 'main page.html';
+});
+  </script>
+</body>
+</html>
