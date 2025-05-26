@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ginhawa</title>
+  <style>
+    * {  
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fefde7;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background-color: #0f3c2c;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo img {
+      height: 60px;
+      /* filter: brightness(0) invert(0); */
+    }
+
+    nav.top-nav {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    nav.top-nav button {
+      padding: 8px 16px;
+      border: none;
+      background: transparent;
+      color: #FBFADA;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 0.3s, border-bottom 0.3s;
+    }
+
+    nav.top-nav button:hover {
+      color: #cbd18f;
+      border-bottom: 2px solid #cbd18f;
+    }
+
+    .main-content {
+      text-align: center;
+      margin-top: 200px;
+      color: #0f3c2c;
+    }
+
+    .main-content h1 {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+
+    .main-content p {
+      font-size: 20px;
+      color: #2f513d;
+      margin-bottom: 30px;
+    }
+
+    .footer {
+      margin-top: 200px;
+      text-align: center;
+      background-color: #fefde7;
+      padding: 20px 10px;
+    }
+
+    .footer .seals {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .footer .seals img {
+      height: 40px;
+    }
+
+    .footer p {
+      font-size: 12px;
+      color: #0f3c2c;
+      margin-top: 10px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <a href="main page.html">
+        <img src="cream1.png" alt="Ginhawa Logo" class="logo" style="cursor: pointer;" />
+      </a>
+      <div class="text-content">
+      </div>
+    </div>
+    <nav class="top-nav">
+      <button onclick="location.href='sign-in.html'">SIGN UP</button>
+      <button onclick="location.href='login.html'">LOG IN</button>
+    </nav>
+  </header>
+
+  <div class="main-content">
+    <h1>GINHAWA</h1>
+    <p>Tulay sa serbisyong medikal, para sa bawat Pilipino</p>
+    <!-- Removed login and signup buttons here as requested -->
+  </div>
+
+  <div class="footer">
+    <div class="seals">
+      <img src="PALAYAN.png" alt="Seal 1">
+      <img src="DICT-Logo.png" alt="Seal 2">
+      <img src="Bagong_Pilipinas_logo.png" alt="Seal 3">
+      <img src="wup.png" alt="Seal 4">
+    </div>
+    <p>
+      Copyright © Ginhawa 2025<br />
+        Wesleyan University - Philippines Interns<br />
+        All Rights Reserved
+    </p>
+  </div>
+</body>
+</html>
