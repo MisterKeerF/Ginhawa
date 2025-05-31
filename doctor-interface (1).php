@@ -226,7 +226,7 @@ $doctorName = $_SESSION['fullName']; // ✅ Correct way to get doctor name
 
     /* Profile and Logout Dialog */
     .dialog {
-      display: none;
+      display: block; /* Show it */
       position: fixed;
       top: 50%;
       left: 50%;
@@ -237,6 +237,7 @@ $doctorName = $_SESSION['fullName']; // ✅ Correct way to get doctor name
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
       width: 300px;
       text-align: center;
+      z-index: 1000;
     }
 
     .dialog button {
@@ -282,9 +283,6 @@ $doctorName = $_SESSION['fullName']; // ✅ Correct way to get doctor name
       background-color: rgba(0, 0, 0, 0.2);
       z-index: 999;
 }
-   .dialog {
-      z-index: 1000;
-}
   .name-info {
       margin-bottom: 10px;
       font-size: 16px;
@@ -313,6 +311,92 @@ $doctorName = $_SESSION['fullName']; // ✅ Correct way to get doctor name
       color: #244032;
       cursor: pointer;
     }
+
+.modal {
+  display: none; /* Initially hidden */
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(36, 64, 50, 0.7);
+  backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+  display: flex; /* Use flexbox to center content */
+}
+
+.modal-content {
+  background-color: #fffde4;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(36, 64, 50, 0.5);
+  font-weight: 600;
+  font-size: 16px;
+  color: #244032;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+
+    .modal-buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .modal-btn {
+      padding: 8px 24px;
+      border: none;
+      border-radius: 25px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .modal-btn.yes {
+      background-color: #244032;
+      color: #fffde4;
+    }
+
+    .modal-btn.no {
+      background-color: #ccc;
+      color: #444;
+    }
+
+    .modal-btn:hover {
+      opacity: 0.9;
+    }
+
+    .modal input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .modal-content h3 {
+      margin-bottom: 20px;
+    }
+
+    .modal-content label {
+      font-size: 14px;
+      margin-top: 10px;
+      display: block;
+      text-align: left;
+    }
+
+    .blur {
+      filter: blur(5px);
+      pointer-events: none;
+    }
+
 
   </style>
 
@@ -359,41 +443,6 @@ $doctorName = $_SESSION['fullName']; // ✅ Correct way to get doctor name
   document.body.appendChild(profileDialog);
   profileDialog.style.display = 'block';
 }
-
-
-   function showLogout() {
-  const blur = document.createElement('div');
-  blur.className = 'blur-bg';
-  blur.id = 'blur-bg';
-  document.body.appendChild(blur);
-
-  const logoutDialog = document.createElement('div');
-  logoutDialog.classList.add('dialog');
-  logoutDialog.innerHTML = ` 
-    <h3>Are you sure you want to log out?</h3>
-    <button onclick="confirmLogout()">Yes</button>
-    <button onclick="closeDialog()">No</button>
-  `;
-  document.body.appendChild(logoutDialog);
-  logoutDialog.style.display = 'block';
-}
-
-
-function confirmLogout() {
-  // alert('Logged out successfully'); ❌ remove this
-  window.location.href = 'logout.php'; // ✅ Redirect to PHP logout
-}
-   function closeDialog() {
-  const dialogs = document.querySelectorAll('.dialog');
-  dialogs.forEach(dialog => {
-    dialog.style.display = 'none';
-    dialog.remove();
-  });
-  const blur = document.getElementById('blur-bg');
-  if (blur) blur.remove();
-}
-
-
     // Patient and Schedule functionality
     function showNames(type) {
       const container = document.getElementById('names-container');
@@ -613,9 +662,19 @@ function confirmLogout() {
     </div>
     <div class="nav">
       <div style="cursor:pointer;" onclick="showProfile()">PROFILE</div>
-      <div onclick="showLogout()" style="cursor:pointer;">LOG OUT</div>
+      <div id="logout-btn" style="cursor:pointer;" onclick="document.getElementById('logout-modal').style.display='block'">LOG OUT</div>
     </div>
   </div>
+    <div id="logout-modal" class="modal">
+  <div class="modal-content">
+    <h3>Are you sure you want to log out?</h3>
+    <div class="modal-buttons">
+      <a href="logout.php" class="modal-btn yes">Yes</a>
+      <button onclick="document.getElementById('logout-modal').style.display='none'" class="modal-btn no">No</button>
+    </div>
+  </div>
+</div>
+
   <div class="main-container">
     <div class="sidebar">
       <div>

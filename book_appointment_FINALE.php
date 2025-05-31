@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 // Connect to the database
-$conn = new mysqli('localhost', 'root', '', 'db1');
+$conn = new mysqli('sql203.infinityfree.com', 'if0_39086009', 'zI7iB22cjtr4w', 'if0_39086009_db1');
 
 if ($conn->connect_error) {
     echo json_encode(['success' => false, 'message' => 'DB connection failed']);

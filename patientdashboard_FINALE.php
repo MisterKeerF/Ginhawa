@@ -1,7 +1,7 @@
 <?php
-session_start();
+  session_start();
+  $patientName = isset($_SESSION['patient_name']) ? $_SESSION['patient_name'] : '';
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -198,7 +198,7 @@ session_start();
 
   <!-- HOME -->
   <div class="container" id="homeContainer">
-    <h2 id="greeting">Mabuhay, Prince Lord!</h2>
+    <h2 id="greeting">Mabuhay, <?php echo htmlspecialchars($patientName); ?>!</h2>
     <h3>Appointment</h3>
     <div id="appointmentHistoryList"></div>
   </div>

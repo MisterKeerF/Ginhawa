@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 session_start(); // ✅ REQUIRED to use sessions
 
 $host = "localhost";
@@ -20,7 +23,7 @@ if (empty($firstName) || empty($lastName) || empty($age) || empty($sex) || empty
 $password_hashed = password_hash($password_raw, PASSWORD_DEFAULT);
 
 // Connect to database
-$conn = new mysqli($host, $dbUser, $dbPass, $dbname);
+$conn = new mysqli('sql203.infinityfree.com', 'if0_39086009', 'zI7iB22cjtr4w', 'if0_39086009_db1');
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }

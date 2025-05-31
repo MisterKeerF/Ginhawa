@@ -7,7 +7,7 @@ $sex = $_POST['sex'];
 $phoneNumber = $_POST['phoneNumber'];
 $password = $_POST['password'];
 
-$conn = new mysqli ('localhost', 'root','','register');
+$conn = new mysqli('sql203.infinityfree.com', 'if0_39086009', 'zI7iB22cjtr4w', 'if0_39086009_db1');
 
 if($conn->connect_error){
     die('Connection Failed  : '.$conn->connect_error);

@@ -1,10 +1,5 @@
 <?php
-$host = 'localhost';       // or your host (e.g., 127.0.0.1)
-$db   = 'db1';   // name of your database
-$user = 'root';   // your MySQL username
-$pass = '';   // your MySQL password
-$charset = 'utf8mb4';
-
+$conn = new mysqli('sql203.infinityfree.com', 'if0_39086009', 'zI7iB22cjtr4w', 'if0_39086009_db1');
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 
 $options = [

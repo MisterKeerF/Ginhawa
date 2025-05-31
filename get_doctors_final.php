@@ -6,7 +6,7 @@ $user = "root";
 $pass = "";
 $dbname = "db1";
 
-$conn = new mysqli($host, $user, $pass, $dbname);
+$conn = new mysqli('sql203.infinityfree.com', 'if0_39086009', 'zI7iB22cjtr4w', 'if0_39086009_db1');
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);

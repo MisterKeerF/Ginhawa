@@ -17,7 +17,7 @@
       background-color: #f8f4d8;
     }
 
-    .left-panel {
+     .left-panel {
       background-color: #103b2d;
       width: 30%;
       display: flex;
@@ -30,14 +30,14 @@
     }
 
     .branding {
-      margin-left: 100px;
       display: flex;
       align-items: center;
       gap: 1rem;
+      margin-left: 70px;
     }
 
     .left-panel img.logo {
-      height: 70px;
+      width: 250px;
     }
 
     .text-content {
@@ -105,30 +105,31 @@
       flex: 1;
     }
 
-    .input-wrapper input,
-    .input-wrapper select {
-      width: 100%;
-      padding: 7px 10px 5px 10px;
-      border: 3px solid #103b2d;
-      border-radius: 10px;
-      font-size: 16px;
-      background: none;
-      box-sizing: border-box;
-    }
+.input-wrapper input,
+.input-wrapper select {
+  width: 100%;
+  padding: 7px 10px 5px 10px;
+  border: 2px solid #103b2d;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600; /* Bold text */
+  background: none;
+  box-sizing: border-box;
+}
 
-    .input-wrapper label {
-      position: absolute;
-      top: 0;
-      left: 12px;
-      background: #f8f4d8;
-      padding: 0 6px;
-      font-size: 14px;
-      color: black;
-      transform: translateY(-50%);
-      pointer-events: none;
-      user-select: none;
-    }
-
+.input-wrapper label {
+  position: absolute;
+  top: 0;
+  left: 12px;
+  background: #f8f4d8;
+  padding: 0 6px;
+  font-size: 14px;
+  color: black;
+  font-weight: 600; /* Bold label */
+  transform: translateY(-50%);
+  pointer-events: none;
+  user-select: none;
+}
     .form-single.full-width {
       display: flex;
       margin-bottom: 1.5rem;
@@ -217,7 +218,7 @@
       </div>
       <p class="copyright">
         Copyright © Ginhawa 2025<br>
-        Wesleyan University - Philippines Interns<br>
+        Wesleyan University - Philippines Interns 2025<br>
         All Rights Reserved
       </p>
     </div>
@@ -238,9 +239,9 @@
       </div>
       <div class="form-group">
         <div class="input-wrapper">
-          <label for="age">Age / Edad</label>
-          <input id="age" name="age" type="number" placeholder=" " required/>
-        </div>
+  <label for="age">Age / Edad</label>
+  <input id="age" name="age" type="number" min="0" placeholder=" " required />
+</div>
         <div class="input-wrapper">
           <label for="sex">Sex / Kasarian</label>
           <select id="sex" name="sex" required>
@@ -251,10 +252,20 @@
         </div>
       </div>
       <div class="form-group">
-        <div class="input-wrapper">
-          <label for="phoneNumber">Phone Number</label>
-          <input id="phoneNumber" name="phoneNumber" type="tel" placeholder=" " required/>
-        </div>
+<div class="input-wrapper">
+  <label for="phoneNumber">Phone Number</label>
+  <input
+    id="phoneNumber"
+    name="phoneNumber"
+    type="tel"
+    placeholder=" "
+    required
+    minlength="11"
+    maxlength="11"
+    pattern="[0-9]{11}"
+    title="Please enter exactly 11 digits"
+  />
+</div>
         <div class="input-wrapper">
           <label for="password">Password</label>
           <input id="password" name="password" type="password" placeholder=" " required/>
@@ -262,7 +273,7 @@
       </div>
       <div class="form-footer">
         <a href="main page.html">Back</a>
-        <button type="submit">Sign In</button>
+        <button type="submit">Sign Up</button>
       </div>
     </form>
   </div>
@@ -297,6 +308,10 @@
   function redirectToLogin() {
     window.location.href = 'login.html'; // Change to your actual login page
   }
+  document.getElementById('phoneNumber').addEventListener('input', function (e) {
+    // Remove any non-digit character
+    this.value = this.value.replace(/\D/g, '');
+  });
 </script>
   <!-- ✅ Success Message Banner END -->
 

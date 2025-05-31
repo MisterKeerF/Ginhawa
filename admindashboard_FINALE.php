@@ -1,24 +1,41 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
-    $conn = new mysqli("localhost", "root", "", "db1");
+}
+
+$conn = new mysqli('sql203.infinityfree.com', 'if0_39086009', 'zI7iB22cjtr4w', 'if0_39086009_db1');
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch doctors
-$doctors = [];
-$sql = "SELECT * FROM doctor";
-$result = $conn->query($sql);
+// Get current page for patients and doctors, default is 1
+$patient_page = isset($_GET['patient_page']) ? max(1, intval($_GET['patient_page'])) : 1;
+$doctor_page = isset($_GET['doctor_page']) ? max(1, intval($_GET['doctor_page'])) : 1;
 
-if ($result && $result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $doctors[] = $row;
-    }
-}
+// Number of entries per page
+$entries_per_page = 8;
 
+// Fetch total counts for patients and doctors
+$total_patients_result = $conn->query("SELECT COUNT(*) AS total FROM user");
+$total_doctors_result = $conn->query("SELECT COUNT(*) AS total FROM doctor");
+
+$total_patients = $total_patients_result->fetch_assoc()['total'] ?? 0;
+$total_doctors = $total_doctors_result->fetch_assoc()['total'] ?? 0;
+
+// Calculate total pages
+$total_patient_pages = ceil($total_patients / $entries_per_page);
+$total_doctor_pages = ceil($total_doctors / $entries_per_page);
+
+// Calculate offsets
+$patient_offset = ($patient_page - 1) * $entries_per_page;
+$doctor_offset = ($doctor_page - 1) * $entries_per_page;
+
+// Fetch patients with LIMIT and OFFSET
 $patients = [];
-$patient_sql = "SELECT * FROM user";
+$patient_sql = "SELECT * FROM user LIMIT $entries_per_page OFFSET $patient_offset";
 $patient_result = $conn->query($patient_sql);
 if ($patient_result && $patient_result->num_rows > 0) {
     while ($row = $patient_result->fetch_assoc()) {
@@ -26,9 +43,19 @@ if ($patient_result && $patient_result->num_rows > 0) {
     }
 }
 
-$conn->close();
+// Fetch doctors with LIMIT and OFFSET
+$doctors = [];
+$doctor_sql = "SELECT * FROM doctor LIMIT $entries_per_page OFFSET $doctor_offset";
+$doctor_result = $conn->query($doctor_sql);
+if ($doctor_result && $doctor_result->num_rows > 0) {
+    while ($row = $doctor_result->fetch_assoc()) {
+        $doctors[] = $row;
+    }
 }
+
+$conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -249,6 +276,7 @@ $conn->close();
       font-weight: 700;
       cursor: pointer;
       font-size: 14px;
+      text-decoration: none;
     }
 
     .modal-btn.yes {
@@ -341,6 +369,46 @@ $conn->close();
   opacity: 0.8;
 }
 
+.pagination {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.pagination a {
+  display: inline-block;
+  padding: 5px 10px;
+  margin: 0 3px;
+  background-color: #4CAF50;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.pagination a.active {
+  background-color: #244032;
+  font-weight: bold;
+}
+
+.pagination a:hover:not(.active) {
+  background-color: #45a049;
+}
+
+.delete-btn {
+  background-color: #f44336; /* bright red */
+  border: none;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.delete-btn:hover {
+  background-color: #d32f2f; /* darker red on hover */
+}
+
   </style>
 </head>
 
@@ -378,23 +446,34 @@ $conn->close();
         <button onclick="toggleNames('Doctor')">Doctor</button>
       </div>
       <div id="names-container">
-  <div id="doctor-names" class="name-box" style="display:none;">
-    <h4>Doctors</h4>
-    <?php foreach ($doctors as $doc): ?>
-      <div class="name-item">
-        <div class="name-info">
-          <strong><?= htmlspecialchars($doc['fullName']) ?></strong>
-          <small><?= htmlspecialchars($doc['specialization']) ?></small>
-        </div>
-        <div>
-          <button onclick="viewCalendar()">Calendar</button>
-          <button onclick="confirmDelete('<?= $doc['id'] ?>')">Delete</button>
-        </div>
+  <!-- Doctors Pagination -->
+<div id="doctor-names" class="name-box" style="display:none;">
+  <h4>Doctors</h4>
+  <?php foreach ($doctors as $doc): ?>
+    <div class="name-item">
+      <div class="name-info">
+        <strong><?= htmlspecialchars($doc['fullName']) ?></strong>
+        <small><?= htmlspecialchars($doc['specialization']) ?></small>
       </div>
-    <?php endforeach; ?>
+      <div>
+        <button onclick="viewCalendar()">Calendar</button>
+        <button class="delete-btn" onclick="confirmDelete('<?= $doc['id'] ?>')">Delete</button>
+      </div>
+    </div>
+  <?php endforeach; ?>
+
+  <div class="pagination">
+    <?php for ($i = 1; $i <= $total_doctor_pages; $i++): ?>
+      <a 
+        href="?doctor_page=<?= $i ?>&patient_page=<?= $patient_page ?>" 
+        class="button-link <?= ($i === $doctor_page) ? 'active' : '' ?>">
+        <?= $i ?>
+      </a>
+    <?php endfor; ?>
   </div>
 </div>
 
+<!-- Patients Pagination -->
 <div id="patient-names" class="name-box" style="display:none;">
   <h4>Patients</h4>
   <?php foreach ($patients as $patient): ?>
@@ -404,15 +483,22 @@ $conn->close();
         <small><?= htmlspecialchars($patient['phoneNumber']) ?></small>
       </div>
       <div>
-          <button onclick="viewCalendar()">Edit</button>
-          <button onclick="confirmDeletePatient('<?= $patient['patient_id'] ?>')">Delete</button>
-        </div>
+        <button onclick="viewCalendar()">Edit</button>
+        <button class="delete-btn" onclick="confirmDeletePatient('<?= $patient['patient_id'] ?>')">Delete</button>
+      </div>
     </div>
   <?php endforeach; ?>
-</div>
 
-    </div>
+  <div class="pagination">
+    <?php for ($i = 1; $i <= $total_patient_pages; $i++): ?>
+      <a 
+        href="?patient_page=<?= $i ?>&doctor_page=<?= $doctor_page ?>" 
+        class="button-link <?= ($i === $patient_page) ? 'active' : '' ?>">
+        <?= $i ?>
+      </a>
+    <?php endfor; ?>
   </div>
+</div>
 
   <!-- Modals -->
   <div id="logout-modal" class="modal">
@@ -420,7 +506,7 @@ $conn->close();
       <p>ARE YOU SURE YOU WANT TO LOG OUT?</p>
       <div class="modal-buttons">
         <a href="logout.php" class="modal-btn yes">YES</a>
-        <a href="admindashboard.html" class="modal-btn no">NO</a>      
+        <a href="admindashboard_FINALE.php" class="modal-btn no">NO</a>      
       </div>
     </div>
   </div>
