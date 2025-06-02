@@ -409,6 +409,24 @@ $conn->close();
   background-color: #d32f2f; /* darker red on hover */
 }
 
+select.custom-dropdown {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  color: #333;
+  transition: border-color 0.3s ease;
+}
+
+select.custom-dropdown:focus {
+  border-color: #4a90e2;
+  outline: none;
+  background-color: #fff;
+}
+
+
   </style>
 </head>
 
@@ -421,6 +439,7 @@ $conn->close();
     <div class="nav">
       <div onclick="document.getElementById('profile-modal').style.display='flex'" style="cursor:pointer;">PROFILE</div>
       <div onclick="document.getElementById('create-account-modal').style.display='flex'" style="cursor:pointer;">ADD DOCTOR</div>
+      <div onclick="document.getElementById('add-specialization-modal').style.display='flex'" style="cursor:pointer;">ADD SPECIALIZATION</div>
       <div id="logout-btn" style="cursor:pointer;">LOG OUT</div>
     </div>
   </div>
@@ -531,10 +550,22 @@ $conn->close();
       <form method="POST" action="create_account.php">
         <label>Username:</label>
         <input type="text" id="user_name" name="user_name" required>
-        <label>Full Name:</label>
-        <input type="text" id="fullName" name="fullName" required/>
-        <label>Specialization:</label>
-        <input type="text" id="specialization" name="specialization" required/>
+        <label>First Name:</label>
+        <input type="text" id="firstName" name="firstName" required/>
+        <label>Last Name:</label>
+        <input type="text" id="lastName" name="lastName" required/>
+        <label for="specialization">Specialization</label>
+        <select name="specialization" id="specialization" class="custom-dropdown" required>
+        <?php
+          if ($specializationsResult && $specializationsResult->num_rows > 0) {
+          while ($row = $specializationsResult->fetch_assoc()) {
+              echo '<option value="' . $row['specialization_id'] . '">' . htmlspecialchars($row['specialization_name']) . '</option>';
+          }
+          } else {
+          echo '<option value="">No specializations available</option>';
+          }
+            ?>
+          </select>
         <label>Password:</label>
         <input type="password" id="password" name="password" required/>
         <div class="modal-buttons">
@@ -544,6 +575,21 @@ $conn->close();
       </form>     
     </div>
   </div>
+
+  <div id="add-specialization-modal" class="modal">
+  <div class="modal-content">
+    <h3>Add Specialization</h3>
+    <form id="add-specialization-form" method="POST" action="add_specialization.php">
+      <label for="specialization_name">Specialization Name</label>
+      <input type="text" id="specialization_name" name="specialization_name" required />
+      <div class="modal-buttons" style="justify-content: flex-end; margin-top: 20px;">
+        <button type="submit" class="modal-btn yes">Add</button>
+        <button type="button" class="modal-btn no" onclick="document.getElementById('add-specialization-modal').style.display='none'">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 
     <!-- Notification Popup -->
   <div id="overlay" class="overlay" style="display:none;"></div>
